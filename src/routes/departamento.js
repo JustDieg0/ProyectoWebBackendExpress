@@ -1,20 +1,20 @@
 const { Router } = require("express");
 const joi = require("joi");
 
-const servicioModel = require("../models/servicio");
+const departamentoModel = require("../models/departamento");
 
 const router = Router();
 
-router.get("/servicio", async (req,res) =>{
+router.get("/departamento", async (req,res) =>{
     try{
-        await servicioModel.getServicio((error,data)=>{
+        await departamentoModel.getDepartamento((error,data)=>{
             if (error) {
                 return res.status(500).json({
                     message: "Error interno del servidor"
                 });
             }
             return res.status(200).json({
-                message: "Servicios obtenidos exitosamente.",
+                message: "Departamentos obtenidos exitosamente.",
                 data: data,
             });
         })
@@ -25,10 +25,10 @@ router.get("/servicio", async (req,res) =>{
     }
 });
 
-router.get("/servicio/:id", async (req,res) =>{
+router.get("/departamento/:id", async (req,res) =>{
     const { id } = req.params;
     try{
-        await servicioModel.getServicioById(id,(error,data)=>{
+        await departamentoModel.getDepartamentoById(id,(error,data)=>{
             if (error) {
                 return res.status(500).json({
                     message: "Error interno del servidor"
@@ -37,12 +37,12 @@ router.get("/servicio/:id", async (req,res) =>{
 
             if (!data || data.length === 0) {
                 return res.status(404).json({
-                    message: "No se encontró servicio.",
+                    message: "No se encontró departamento.",
                 });
             }
 
             return res.status(200).json({
-                message: "Servicio obtenido exitosamente.",
+                message: "Departamento obtenido exitosamente.",
                 data: data,
             });
         })
@@ -54,19 +54,21 @@ router.get("/servicio/:id", async (req,res) =>{
 
 });
 
-router.post("/servicio", async (req,res) =>{
+router.post("/departamento", async (req,res) =>{
 
 
     const schema = joi.object({
-        nombre: joi.string().max(50).required(),
-        descripcion: joi.string().max(255).required(),
-        precio: joi.number().precision(2).min(0).max(99999.99).required()
+        tipo: joi.string().valid("departamento","minidepartamento","cuarto").required(),
+        precio_mensual: joi.number().precision(2).min(0).max(99999.99).required(),
+        estado: joi.string().valid("libre","ocupado","mantenimiento").required()
     })
 
-    servicioData = {
-        nombre: req.body.nombre,
-        descripcion: req.body.descripcion,
-        precio: req.body.precio
+    departamentoData = {
+        tipo: req.body.tipo,
+        precio_mensual: req.body.precio_mensual,
+        estado: req.body.estado,
+        aforo: req.body.aforo,
+        ubicacion: req.body.ubicacion
     }
     const { error } = schema.validate(req.body);
     if (error) {
@@ -76,7 +78,7 @@ router.post("/servicio", async (req,res) =>{
     }
 
     try{
-        await servicioModel.insertServicio(servicioData,(error,data)=>{
+        await departamentoModel.insertDepartamento(departamentoData,(error,data)=>{
             if (error) {
                 return res.status(500).json({
                     message: "Error interno del servidor"
@@ -85,12 +87,12 @@ router.post("/servicio", async (req,res) =>{
 
             if (!data) {
                 return res.status(500).json({
-                    message: "No pudo registrar servicio.",
+                    message: "No pudo registrar departamento.",
                 });
             }
 
             return res.status(201).json({
-                message: "Servicio registrado exitosamente."
+                message: "Departamento registrado exitosamente."
             });
         })
     } catch (err){
@@ -100,19 +102,21 @@ router.post("/servicio", async (req,res) =>{
     }
 });
 
-router.put("/servicio/:id", async (req,res) =>{
+router.put("/departamento/:id", async (req,res) =>{
     const { id } = req.params;
 
     const schema = joi.object({
-        nombre: joi.string().max(50).required(),
-        descripcion: joi.string().max(255).required(),
-        precio: joi.number().precision(2).min(0).max(99999.99).required()
+        tipo: joi.string().valid("departamento","minidepartamento","cuarto").required(),
+        precio_mensual: joi.number().precision(2).min(0).max(99999.99).required(),
+        estado: joi.string().valid("libre","ocupado","mantenimiento").required()
     })
 
-    servicioData = {
-        nombre: req.body.nombre,
-        descripcion: req.body.descripcion,
-        precio: req.body.precio
+    departamentoData = {
+        tipo: req.body.tipo,
+        precio_mensual: req.body.precio_mensual,
+        estado: req.body.estado,
+        aforo: req.body.aforo,
+        ubicacion: req.body.ubicacion
     }
     const { error } = schema.validate(req.body);
     if (error) {
@@ -122,7 +126,7 @@ router.put("/servicio/:id", async (req,res) =>{
     }
 
     try{
-        await servicioModel.updateServicio(id,servicioData,(error,data)=>{
+        await departamentoModel.updateDepartamento(id,departamentoData,(error,data)=>{
             if (error) {
                 return res.status(500).json({
                     message: "Error interno del servidor"
@@ -131,12 +135,12 @@ router.put("/servicio/:id", async (req,res) =>{
 
             if (!data) {
                 return res.status(404).json({
-                    message: "No pudo actualizar servicio."
+                    message: "No pudo actualizar departamento."
                 });
             }
 
             return res.status(200).json({
-                message: "Servicio actualizado exitosamente."
+                message: "Departamento actualizado exitosamente."
             });
         })
     } catch (err){
@@ -146,19 +150,21 @@ router.put("/servicio/:id", async (req,res) =>{
     }
 });
 
-router.patch("/servicio/:id", async (req,res) =>{
+router.patch("/departamento/:id", async (req,res) =>{
     const { id } = req.params;
 
     const schema = joi.object({
-        nombre: joi.string().max(50).required(),
-        descripcion: joi.string().max(255).required(),
-        precio: joi.number().precision(2).min(0).max(99999.99).required()
+        tipo: joi.string().valid("departamento","minidepartamento","cuarto").required(),
+        precio_mensual: joi.number().precision(2).min(0).max(99999.99).required(),
+        estado: joi.string().valid("libre","ocupado","mantenimiento").required()
     })
 
-    servicioData = {
-        nombre: req.body.nombre,
-        descripcion: req.body.descripcion,
-        precio: req.body.precio
+    departamentoData = {
+        tipo: req.body.tipo,
+        precio_mensual: req.body.precio_mensual,
+        estado: req.body.estado,
+        aforo: req.body.aforo,
+        ubicacion: req.body.ubicacion
     }
     const { error } = schema.validate(req.body);
     if (error) {
@@ -167,22 +173,22 @@ router.patch("/servicio/:id", async (req,res) =>{
         })
     }
 
-    let cleanServicioData = {}
+    let cleanDepartamentoData = {}
 
-    Object.keys(servicioData).forEach((key) => {
+    Object.keys(departamentoData).forEach((key) => {
         if (req.body[key] !== undefined && req.body[key] !== null && req.body[key] !== "") {
-            cleanServicioData[key] = servicioData[key];
+            cleanDepartamentoData[key] = departamentoData[key];
         }
     });
 
-    if(Object.keys(cleanServicioData).length === 0){
+    if(Object.keys(cleanDepartamentoData).length === 0){
         return res.status(400).json({ 
             message: "No hay campos para actualizar"
         })
     }
     
     try{
-        await servicioModel.updateServicio(id,cleanServicioData,(error,data)=>{
+        await departamentoModel.updateDepartamento(id,cleanDepartamentoData,(error,data)=>{
             if (error) {
                 return res.status(500).json({
                     message: "Error interno del servidor"
@@ -191,12 +197,12 @@ router.patch("/servicio/:id", async (req,res) =>{
 
             if (!data) {
                 return res.status(404).json({
-                    message: "No pudo actualizar servicio."
+                    message: "No pudo actualizar departamento."
                 });
             }
 
             return res.status(200).json({
-                message: "Servicio actualizado exitosamente."
+                message: "Departamento actualizado exitosamente."
             });
         })
     } catch (err){
@@ -206,10 +212,10 @@ router.patch("/servicio/:id", async (req,res) =>{
     }
 });
 
-router.delete("/servicio/:id", async (req,res) =>{
+router.delete("/departamento/:id", async (req,res) =>{
     const { id } = req.params;
     try{
-        await servicioModel.deleteServicio(id,(error,affectedRows)=>{
+        await departamentoModel.deleteDepartamento(id,(error,affectedRows)=>{
             if (error) {
                 return res.status(500).json({
                     message: "Error interno del servidor"
@@ -218,12 +224,12 @@ router.delete("/servicio/:id", async (req,res) =>{
             
             if(affectedRows === 0) {
                 return res.status(404).json({
-                    message: "Servicio no encontrado"
+                    message: "Departamento no encontrado"
                 })
             }
 
             return res.status(200).json({
-                message: "Servicio eliminado exitosamente."
+                message: "Departamento eliminado exitosamente."
             });
         })
     } catch (err){

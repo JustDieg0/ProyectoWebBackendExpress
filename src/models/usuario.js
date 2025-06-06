@@ -9,9 +9,7 @@ usuario.getUsuario = (callback) => {
             if(error){
                 throw error;
             }else{
-                res = {
-                    data:rows
-                }
+                res = rows
                 callback(null,res);
             }
             conection.cerrarConexion();
@@ -28,9 +26,7 @@ usuario.getUsuarioById = (id,callback) => {
             if(error){
                 throw error;
             }else{
-                res = {
-                    data:rows
-                }
+                res = rows
                 callback(null,res);
             }
             conection.cerrarConexion();
@@ -42,7 +38,7 @@ usuario.insertUsuario = (usuarioData,callback) => {
     con = conection.conMysql();
 	if (con) 
 	{
-		con.query('INSERT INTO usuario SET ?', usuarioData, (error, result) => {
+		con.query('call sp_addUsuario(?,?,?,?,?)', [usuarioData.nombres,usuarioData.apellidos,usuarioData.telefono,usuarioData.nacionalidad,usuarioData.doc_ident], (error, result) => {
 			if(error){
 				throw error;
 			}else{
@@ -54,17 +50,11 @@ usuario.insertUsuario = (usuarioData,callback) => {
 }
 
 usuario.updateUsuario = (id,datosUsuario,callback) => {
-    const _id = con.escape(id);
-    const _nombres = con.escape(datosUsuario.nombres);
-    const _apellidos = con.escape(datosUsuario.apellidos);
-    const _telefono = con.escape(datosUsuario.telefono);
-    const _nacionalidad = con.escape(datosUsuario.nacionalidad);
-    const _doc_ident = con.escape(datosUsuario.doc_ident);
-
+    
     con = conection.conMysql();
     if(con){
-        var sql = `UPDATE usuario SET nombres=${_nombres}, apellidos=${_apellidos}, telefono=${_telefono}, nacionalidad=${_nacionalidad}, doc_ident=${_doc_ident}  WHERE usuarioid=${_id}`;
-        con.query(sql, (error,rows) => {
+        var sql = `UPDATE usuario SET ?  WHERE usuarioid=?`;
+        con.query(sql,[datosUsuario,id], (error,rows) => {
             if(error){
                 throw error;
             }else{
@@ -85,7 +75,7 @@ usuario.deleteUsuario = (id,callback) => {
             if(error){
                 throw error;
             }else{
-                callback(null, true);
+                callback(null, rows.affectedRows);
             }
             conection.cerrarConexion();
         });

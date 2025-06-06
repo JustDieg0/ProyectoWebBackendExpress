@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const joi = require("joi");
 
 const usuarioModel = require("../models/usuario");
 
@@ -12,13 +13,6 @@ router.get("/usuario", async (req,res) =>{
                     message: "Error interno del servidor"
                 });
             }
-
-            if (!data || data.length === 0) {
-                return res.status(404).json({
-                    message: "No se encontraron usuarios.",
-                });
-            }
-
             return res.status(200).json({
                 message: "Usuarios obtenidos exitosamente.",
                 data: data,
@@ -61,12 +55,28 @@ router.get("/usuario/:id", async (req,res) =>{
 });
 
 router.post("/usuario", async (req,res) =>{
+
+
+    const schema = joi.object({
+        nombres: joi.string().min(3).max(50).required(),
+        apellidos: joi.string().min(3).max(50).required(),
+        telefono: joi.string().pattern(/^\d{9}$/).required(),
+        nacionalidad: joi.string().min(3).max(50).required(),
+        doc_ident: joi.string().min(3).max(50).required(),
+    })
+
     usuarioData = {
         nombres: req.body.nombres,
         apellidos: req.body.apellidos,
         telefono: req.body.telefono,
         nacionalidad: req.body.nacionalidad,
         doc_ident: req.body.doc_ident
+    }
+    const { error } = schema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ 
+            message: "Ingrese todos los datos correctamente."
+        })
     }
 
     try{
@@ -78,14 +88,13 @@ router.post("/usuario", async (req,res) =>{
             }
 
             if (!data) {
-                return res.status(404).json({
+                return res.status(500).json({
                     message: "No pudo registrar usuario.",
                 });
             }
 
-            return res.status(200).json({
-                message: "Usuario registrado exitosamente.",
-                data: data,
+            return res.status(201).json({
+                message: "Usuario registrado exitosamente."
             });
         })
     } catch (err){
@@ -98,6 +107,14 @@ router.post("/usuario", async (req,res) =>{
 router.put("/usuario/:id", async (req,res) =>{
     const { id } = req.params;
 
+    const schema = joi.object({
+        nombres: joi.string().min(3).max(50).required(),
+        apellidos: joi.string().min(3).max(50).required(),
+        telefono: joi.string().pattern(/^\d{9}$/).required(),
+        nacionalidad: joi.string().min(3).max(50).required(),
+        doc_ident: joi.string().min(3).max(50).required(),
+    })
+
     usuarioData = {
         nombres: req.body.nombres,
         apellidos: req.body.apellidos,
@@ -105,6 +122,13 @@ router.put("/usuario/:id", async (req,res) =>{
         nacionalidad: req.body.nacionalidad,
         doc_ident: req.body.doc_ident
     }
+    const { error } = schema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ 
+            message: "Ingrese todos los datos correctamente."
+        })
+    }
+
     try{
         await usuarioModel.updateUsuario(id,usuarioData,(error,data)=>{
             if (error) {
@@ -115,13 +139,76 @@ router.put("/usuario/:id", async (req,res) =>{
 
             if (!data) {
                 return res.status(404).json({
-                    message: "No pudo actualizar usuario.",
+                    message: "No pudo actualizar usuario."
                 });
             }
 
             return res.status(200).json({
-                message: "Usuario actualizado exitosamente.",
-                data: data,
+                message: "Usuario actualizado exitosamente."
+            });
+        })
+    } catch (err){
+        return res.status(500).json({
+            message: "Ocurrió un error inesperado."
+        });
+    }
+});
+
+router.patch("/usuario/:id", async (req,res) =>{
+    const { id } = req.params;
+
+    const schema = joi.object({
+        nombres: joi.string().min(3).max(50),
+        apellidos: joi.string().min(3).max(50),
+        telefono: joi.string().pattern(/^\d{9}$/),
+        nacionalidad: joi.string().min(3).max(50),
+        doc_ident: joi.string().min(3).max(50),
+    })
+
+    usuarioData = {
+        nombres: req.body.nombres,
+        apellidos: req.body.apellidos,
+        telefono: req.body.telefono,
+        nacionalidad: req.body.nacionalidad,
+        doc_ident: req.body.doc_ident
+    }
+    const { error } = schema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ 
+            message: "Ingrese todos los datos correctamente."
+        })
+    }
+
+    let cleanUsuarioData = {}
+
+    Object.keys(usuarioData).forEach((key) => {
+        if (req.body[key] !== undefined && req.body[key] !== null && req.body[key] !== "") {
+            cleanUsuarioData[key] = usuarioData[key];
+        }
+    });
+
+    if(Object.keys(cleanUsuarioData).length === 0){
+        return res.status(400).json({ 
+            message: "No hay campos para actualizar"
+        })
+    }
+    
+    try{
+        await usuarioModel.updateUsuario(id,cleanUsuarioData,(error,data)=>{
+            if (error) {
+                return res.status(500).json({
+                    message: "Error interno del servidor"
+                });
+            }
+
+            if (!data) {
+                return res.status(404).json({
+                    message: "No pudo actualizar usuario."
+                });
+            }
+
+            return res.status(200).json({
+                message: "Usuario actualizado exitosamente."
             });
         })
     } catch (err){
@@ -134,22 +221,21 @@ router.put("/usuario/:id", async (req,res) =>{
 router.delete("/usuario/:id", async (req,res) =>{
     const { id } = req.params;
     try{
-        await usuarioModel.deleteUsuario(id,(error,data)=>{
+        await usuarioModel.deleteUsuario(id,(error,affectedRows)=>{
             if (error) {
                 return res.status(500).json({
                     message: "Error interno del servidor"
                 });
             }
-
-            if (!data) {
+            
+            if(affectedRows === 0) {
                 return res.status(404).json({
-                    message: "No pudo eliminar usuario.",
-                });
+                    message: "Usuario no encontrado"
+                })
             }
 
             return res.status(200).json({
-                message: "Usuario eliminado exitosamente.",
-                data: data,
+                message: "Usuario eliminado exitosamente."
             });
         })
     } catch (err){

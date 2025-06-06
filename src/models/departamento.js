@@ -1,11 +1,11 @@
 const conection = require('../db/mysql');
 
-var contrato = {}
+var departamento = {}
 
-contrato.getContrato = (callback) => {
+departamento.getDepartamento = (callback) => {
     con = conection.conMysql();
     if(con){
-        con.query('select contratoid,usuarioid,habitacionid,garantiaid,fecha_inicio,fecha_fin,estado,monto from contrato', (error,rows) => {
+        con.query('select departamentoid,tipo,precio_mensual,estado,aforo,ubicacion from departamento', (error,rows) => {
             if(error){
                 throw error;
             }else{
@@ -17,11 +17,11 @@ contrato.getContrato = (callback) => {
     }
 }
 
-contrato.getContratoById = (id,callback) => {
+departamento.getDepartamentoById = (id,callback) => {
     con = conection.conMysql();
     if(con){
         const _id = con.escape(id);
-        var sql = `SELECT contratoid,usuarioid,habitacionid,garantiaid,fecha_inicio,fecha_fin,estado,monto FROM contrato WHERE contratoid = ${_id}`;
+        var sql = `select departamentoid,tipo,precio_mensual,estado,aforo,ubicacion from departamento WHERE departamentoid = ${_id}`;
         con.query(sql, (error,rows) => {
             if(error){
                 throw error;
@@ -34,11 +34,11 @@ contrato.getContratoById = (id,callback) => {
     }
 }
 
-contrato.insertContrato = (contratoData,callback) => {
+departamento.insertDepartamento = (departamentoData,callback) => {
     con = conection.conMysql();
     if (con) 
     {
-        con.query('call sp_addContrato(?,?,?,?,?,?,?)', [contratoData.usuarioid,contratoData.habitacionid,contratoData.garantiaid,contratoData.fecha_inicio,contratoData.fecha_fin,contratoData.estado,contratoData.monto], (error, result) => {
+        con.query('call sp_addDepartamento(?,?,?,?,?)', [departamentoData.tipo,departamentoData.precio_mensual,departamentoData.estado,departamentoData.aforo,departamentoData.ubicacion], (error, result) => {
             if(error){
                 throw error;
             }else{
@@ -49,12 +49,12 @@ contrato.insertContrato = (contratoData,callback) => {
     }
 }
 
-contrato.updateContrato = (id,datosContrato,callback) => {
+departamento.updateDepartamento = (id,datosDepartamento,callback) => {
     
     con = conection.conMysql();
     if(con){
-        var sql = `UPDATE contrato SET ?  WHERE contratoid=?`;
-        con.query(sql,[datosContrato,id], (error,rows) => {
+        var sql = `UPDATE departamento SET ?  WHERE departamentoid=?`;
+        con.query(sql,[datosDepartamento,id], (error,rows) => {
             if(error){
                 throw error;
             }else{
@@ -65,12 +65,12 @@ contrato.updateContrato = (id,datosContrato,callback) => {
     }
 }
 
-contrato.deleteContrato = (id,callback) => {
+departamento.deleteDepartamento = (id,callback) => {
 
     con = conection.conMysql();
     if(con){
         const _id = con.escape(id);
-        var sql = `DELETE FROM contrato WHERE contratoid = ${_id}`;
+        var sql = `DELETE FROM departamento WHERE departamentoid = ${_id}`;
         con.query(sql, (error,rows) => {
             if(error){
                 throw error;
@@ -82,4 +82,4 @@ contrato.deleteContrato = (id,callback) => {
     }
 }
 
-module.exports = contrato;
+module.exports = departamento;

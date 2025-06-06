@@ -9,10 +9,7 @@ servicio.getServicio = (callback) => {
             if(error){
                 throw error;
             }else{
-                res = {
-                    status:"success",
-                    data:rows
-                }
+                res = rows
                 callback(null,res);
             }
             conection.cerrarConexion();
@@ -29,10 +26,7 @@ servicio.getServicioById = (id,callback) => {
             if(error){
                 throw error;
             }else{
-                res = {
-                    status:"success",
-                    data:rows
-                }
+                res = rows
                 callback(null,res);
             }
             conection.cerrarConexion();
@@ -44,11 +38,11 @@ servicio.insertServicio = (servicioData,callback) => {
     con = conection.conMysql();
     if (con) 
     {
-        con.query('INSERT INTO servicio SET ?', servicioData, (error, result) => {
+        con.query('call sp_addServicio(?,?,?)', [servicioData.nombre,servicioData.descripcion,servicioData.precio], (error, result) => {
             if(error){
                 throw error;
             }else{
-                callback(null, {status:"success"});
+                callback(null, true);
             }
             conection.cerrarConexion();
         });
@@ -56,17 +50,15 @@ servicio.insertServicio = (servicioData,callback) => {
 }
 
 servicio.updateServicio = (id,datosServicio,callback) => {
-    const _id = con.escape(id);
-    const _nombre = con.escape(datosServicio.nombre);
-
+    
     con = conection.conMysql();
     if(con){
-        var sql = `UPDATE servicio SET nombre=${_nombre} WHERE servicioid=${_id}`;
-        con.query(sql, (error,rows) => {
+        var sql = `UPDATE servicio SET ?  WHERE servicioid=?`;
+        con.query(sql,[datosServicio,id], (error,rows) => {
             if(error){
                 throw error;
             }else{
-                callback(null, {status:"success"});
+                callback(null, true);
             }
             conection.cerrarConexion();
         });
@@ -83,7 +75,7 @@ servicio.deleteServicio = (id,callback) => {
             if(error){
                 throw error;
             }else{
-                callback(null, {status:"success"});
+                callback(null, rows.affectedRows);
             }
             conection.cerrarConexion();
         });
