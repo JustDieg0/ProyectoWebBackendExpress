@@ -5,7 +5,7 @@ var departamento = {}
 departamento.getDepartamento = (callback) => {
     con = conection.conMysql();
     if(con){
-        con.query('select departamentoid,tipo,precio_mensual,estado,aforo,ubicacion from departamento', (error,rows) => {
+        con.query('select departamentoid,nombre,descripcion,tipo,precio_mensual,estado,aforo,ubicacion from departamento', (error,rows) => {
             if(error){
                 throw error;
             }else{
@@ -21,7 +21,7 @@ departamento.getDepartamentoById = (id,callback) => {
     con = conection.conMysql();
     if(con){
         const _id = con.escape(id);
-        var sql = `select departamentoid,tipo,precio_mensual,estado,aforo,ubicacion from departamento WHERE departamentoid = ${_id}`;
+        var sql = `select departamentoid,nombre,descripcion,tipo,precio_mensual,estado,aforo,ubicacion from departamento WHERE departamentoid = ${_id}`;
         con.query(sql, (error,rows) => {
             if(error){
                 throw error;
@@ -38,7 +38,7 @@ departamento.insertDepartamento = (departamentoData,callback) => {
     con = conection.conMysql();
     if (con) 
     {
-        con.query('call sp_addDepartamento(?,?,?,?,?)', [departamentoData.tipo,departamentoData.precio_mensual,departamentoData.estado,departamentoData.aforo,departamentoData.ubicacion], (error, result) => {
+        con.query('call sp_addDepartamento(?,?,?,?,?,?,?)', [departamentoData.nombre,departamentoData.descripcion,departamentoData.tipo,departamentoData.precio_mensual,departamentoData.estado,departamentoData.aforo,departamentoData.ubicacion], (error, result) => {
             if(error){
                 throw error;
             }else{

@@ -64,6 +64,8 @@ router.post("/departamento", async (req,res) =>{
     })
 
     departamentoData = {
+        nombre: req.body.nombre,
+        descripcion: req.body.descripcion,
         tipo: req.body.tipo,
         precio_mensual: req.body.precio_mensual,
         estado: req.body.estado,
@@ -112,6 +114,8 @@ router.put("/departamento/:id", async (req,res) =>{
     })
 
     departamentoData = {
+        nombre: req.body.nombre,
+        descripcion: req.body.descripcion,
         tipo: req.body.tipo,
         precio_mensual: req.body.precio_mensual,
         estado: req.body.estado,
@@ -160,6 +164,8 @@ router.patch("/departamento/:id", async (req,res) =>{
     })
 
     departamentoData = {
+        nombre: req.body.nombre,
+        descripcion: req.body.descripcion,
         tipo: req.body.tipo,
         precio_mensual: req.body.precio_mensual,
         estado: req.body.estado,
