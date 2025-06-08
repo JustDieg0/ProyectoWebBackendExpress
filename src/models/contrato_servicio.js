@@ -38,7 +38,7 @@ contrato_servicio.insertContrato_servicio = (contrato_servicioData,callback) => 
     con = conection.conMysql();
     if (con) 
     {
-        con.query('call sp_addContrato_servicio(?,?)', [contrato_servicioData.servicioid,contrato_servicioData.cantidad], (error, result) => {
+        con.query('insert into contrato_servicio (contratoid, servicioid, cantidad) values (?,?,?)', [contrato_servicio.contratoid,contrato_servicioData.servicioid,contrato_servicioData.cantidad], (error, result) => {
             if(error){
                 throw error;
             }else{
