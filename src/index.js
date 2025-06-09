@@ -19,6 +19,7 @@ app.use(require("./routes/departamento"));
 app.use(require("./routes/garantia"));
 app.use(require("./routes/contratoservicio"));
 app.use(require("./routes/servicio.js"));*/
+app.use(require("./routes/imagenes.js"));
 
 //server
 app.listen(app.get("port"), () => {
