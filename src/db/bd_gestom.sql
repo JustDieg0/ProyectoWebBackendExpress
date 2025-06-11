@@ -286,6 +286,48 @@ CREATE PROCEDURE `sp_addUsuario` (IN `p_nombres` VARCHAR(50), IN `p_apellidos` V
   );
 END$$
 
+DELIMITER $$
+
+CREATE PROCEDURE sp_proximos_pagos_pendientes()
+BEGIN
+  SELECT *
+  FROM (
+    -- Pagos mensuales pendientes
+    SELECT 
+      p.monto,
+      u.nombres AS usuario,
+      'mensual' AS tipo_pago,
+      p.fecha_pago,
+      CASE
+        WHEN p.fecha_pago < CURDATE() THEN 'vencido'
+        ELSE 'por pagar'
+      END AS estado
+    FROM pago p
+    JOIN contrato c ON p.contratoid = c.contratoid
+    JOIN usuario u ON c.usuarioid = u.usuarioid
+    WHERE p.tipo_pago = 'pendiente'
+
+    UNION ALL
+
+    -- Pagos de reserva pendientes
+    SELECT 
+      pr.monto,
+      u.nombres AS usuario,
+      'reserva' AS tipo_pago,
+      pr.fecha_pago,
+      CASE
+        WHEN pr.fecha_pago < CURDATE() THEN 'vencido'
+        ELSE 'por pagar'
+      END AS estado
+    FROM pago_reserva pr
+    JOIN reserva r ON pr.reservaid = r.reservaid
+    JOIN usuario u ON r.usuarioid = u.usuarioid
+    WHERE r.estado = 'pendiente'
+  ) AS pagos_pendientes
+  ORDER BY fecha_pago
+  LIMIT 5;
+END $$
+
 DELIMITER ;
 
 -- --------------------------------------------------------
