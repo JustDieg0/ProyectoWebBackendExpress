@@ -245,4 +245,104 @@ router.delete("/usuario/:id", async (req,res) =>{
     }
 });
 
+router.get("/cantidad/usuario", async (req,res) =>{
+    try{
+        await usuarioModel.getCountUsuario((error,data)=>{
+            if (error) {
+                return res.status(500).json({
+                    message: "Error interno del servidor"
+                });
+            }
+            return res.status(200).json({
+                message: "Usuarios obtenidos exitosamente.",
+                data: data,
+            });
+        })
+    } catch (err){
+        return res.status(500).json({
+            message: "Ocurrió un error inesperado."
+        });
+    }
+});
+
+router.get("/cantidad/contrato", async (req,res) =>{
+    try{
+        await usuarioModel.getCountContrato((error,data)=>{
+            if (error) {
+                return res.status(500).json({
+                    message: "Error interno del servidor"
+                });
+            }
+            return res.status(200).json({
+                message: "Usuarios obtenidos exitosamente.",
+                data: data,
+            });
+        })
+    } catch (err){
+        return res.status(500).json({
+            message: "Ocurrió un error inesperado."
+        });
+    }
+});
+
+router.get("/cantidad/pagos", async (req,res) =>{
+    try{
+        await usuarioModel.getCountPagos((error,data)=>{
+            if (error) {
+                return res.status(500).json({
+                    message: "Error interno del servidor"
+                });
+            }
+            return res.status(200).json({
+                message: "Usuarios obtenidos exitosamente.",
+                data: data,
+            });
+        })
+    } catch (err){
+        return res.status(500).json({
+            message: "Ocurrió un error inesperado."
+        });
+    }
+});
+
+router.get("/dashboard/pagos", async (req,res) =>{
+    try{
+        await usuarioModel.getCountPagosPorMes((error,data)=>{
+            if (error) {
+                return res.status(500).json({
+                    message: "Error interno del servidor"
+                });
+            }
+            return res.status(200).json({
+                message: "Usuarios obtenidos exitosamente.",
+                data: data,
+            });
+        })
+    } catch (err){
+        return res.status(500).json({
+            message: "Ocurrió un error inesperado."
+        });
+    }
+});
+
+router.get("/dashboard/pagos/proximos/5", async (req,res) =>{
+    try{
+        await usuarioModel.getListProximosPagos((error,data)=>{
+            if (error) {
+                return res.status(500).json({
+                    message: "Error interno del servidor"
+                });
+            }
+            return res.status(200).json({
+                message: "Usuarios obtenidos exitosamente.",
+                data: data,
+            });
+        })
+    } catch (err){
+        return res.status(500).json({
+            message: "Ocurrió un error inesperado."
+        });
+    }
+});
+
 module.exports = router;

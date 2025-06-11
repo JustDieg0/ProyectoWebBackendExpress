@@ -113,10 +113,15 @@ router.put("/departamento/:id", async (req,res) =>{
     const { id } = req.params;
 
     const schema = joi.object({
-        tipo: joi.string().valid("departamento","minidepartamento","cuarto").required(),
+        nombre: joi.string().max(100).required(),
+        descripcion: joi.string().required(),
+        tipo: joi.string().valid("departamento", "minidepartamento", "cuarto").required(),
         precio_mensual: joi.number().precision(2).min(0).max(99999.99).required(),
-        estado: joi.string().valid("libre","ocupado","mantenimiento").required()
-    })
+        estado: joi.string().valid("disponible", "ocupado", "mantenimiento").required(),
+        aforo: joi.number().integer().min(0).max(99).required(),
+        ubicacion: joi.string().max(100).required(),
+        activo: joi.boolean().required(),
+    });
 
     departamentoData = {
         nombre: req.body.nombre,
@@ -125,10 +130,12 @@ router.put("/departamento/:id", async (req,res) =>{
         precio_mensual: req.body.precio_mensual,
         estado: req.body.estado,
         aforo: req.body.aforo,
-        ubicacion: req.body.ubicacion
+        ubicacion: req.body.ubicacion,
+        activo : req.body.activo
     }
     const { error } = schema.validate(req.body);
     if (error) {
+        console.log(error);
         return res.status(400).json({ 
             message: "Ingrese todos los datos correctamente."
         })
@@ -163,10 +170,14 @@ router.patch("/departamento/:id", async (req,res) =>{
     const { id } = req.params;
 
     const schema = joi.object({
-        tipo: joi.string().valid("departamento","minidepartamento","cuarto").required(),
+        nombre: joi.string().max(100).required(),
+        descripcion: joi.string().required(),
+        tipo: joi.string().valid("departamento", "minidepartamento", "cuarto").required(),
         precio_mensual: joi.number().precision(2).min(0).max(99999.99).required(),
-        estado: joi.string().valid("libre","ocupado","mantenimiento").required()
-    })
+        estado: joi.string().valid("disponible", "ocupado", "mantenimiento").required(),
+        aforo: joi.number().integer().min(0).max(99).required(),
+        ubicacion: joi.string().max(100).required()
+    });
 
     departamentoData = {
         nombre: req.body.nombre,

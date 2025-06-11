@@ -3,18 +3,14 @@ const conection = require('../db/mysql');
 var departamento = {}
 
 departamento.getDepartamento = (callback) => {
-    con = conection.conMysql();
-    if(con){
-        con.query('select departamentoid,nombre,descripcion,tipo,precio_mensual,estado,aforo,ubicacion,activo from departamento', (error,rows) => {
+        conection.pool.query('select departamentoid,nombre,descripcion,tipo,precio_mensual,estado,aforo,ubicacion,activo from departamento', (error,rows) => {
             if(error){
                 throw error;
             }else{
                 res = rows
                 callback(null,res);
             }
-            conection.cerrarConexion();
         });
-    }
 }
 
 departamento.getDepartamentoById = (id,callback) => {

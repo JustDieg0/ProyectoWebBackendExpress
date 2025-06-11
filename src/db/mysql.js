@@ -45,4 +45,12 @@ function cerrarConexion() {
     }
 }
 
-module.exports = { conMysql, cerrarConexion };
+const pool = mysql.createPool({
+  connectionLimit: 10,
+  host: dbconfig.host,
+  user: dbconfig.user,
+  password: dbconfig.password,
+  database: dbconfig.database
+});
+
+module.exports = { conMysql, cerrarConexion, pool };
