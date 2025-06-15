@@ -1,85 +1,64 @@
 const conection = require('../db/mysql');
+const { pool } = require('../db/mysql');
 
 var contrato = {}
 
 contrato.getContrato = (callback) => {
-    con = conection.conMysql();
-    if(con){
-        con.query('select contratoid,usuarioid,habitacionid,garantiaid,fecha_inicio,fecha_fin,estado,monto from contrato', (error,rows) => {
-            if(error){
-                throw error;
-            }else{
-                res = rows
-                callback(null,res);
-            }
-            conection.cerrarConexion();
-        });
-    }
+    pool.query('select contratoid,administradorid,usuarioid,departamentoid,garantiaid,fecha_inicio,fecha_fin,estado,monto from contrato', (error,rows) => {
+        if(error){
+            throw error;
+        }else{
+            res = rows
+            callback(null,res);
+        }
+    });
 }
 
 contrato.getContratoById = (id,callback) => {
-    con = conection.conMysql();
-    if(con){
-        const _id = con.escape(id);
-        var sql = `SELECT contratoid,usuarioid,habitacionid,garantiaid,fecha_inicio,fecha_fin,estado,monto FROM contrato WHERE contratoid = ${_id}`;
-        con.query(sql, (error,rows) => {
-            if(error){
-                throw error;
-            }else{
-                res = rows
-                callback(null,res);
-            }
-            conection.cerrarConexion();
-        });
-    }
+    const _id = pool.escape(id);
+    var sql = `SELECT contratoid,administradorid,usuarioid,departamentoid,garantiaid,fecha_inicio,fecha_fin,estado,monto FROM contrato WHERE contratoid = ${_id}`;
+    pool.query(sql, (error,rows) => {
+        if(error){
+            throw error;
+        }else{
+            res = rows
+            callback(null,res);
+        }
+    });
 }
 
 contrato.insertContrato = (contratoData,callback) => {
-    con = conection.conMysql();
-    if (con) 
-    {
-        con.query('call sp_addContrato(?,?,?,?,?,?,?)', [contratoData.usuarioid,contratoData.habitacionid,contratoData.garantiaid,contratoData.fecha_inicio,contratoData.fecha_fin,contratoData.estado,contratoData.monto], (error, result) => {
-            if(error){
-                throw error;
-            }else{
-                callback(null, true);
-            }
-            conection.cerrarConexion();
-        });
-    }
+    pool.query('call sp_addContrato(?,?,?,?,?,?,?,?)', [contratoData.usuarioid,contratoData.administradorid,contratoData.departamentoid,contratoData.garantiaid,contratoData.fecha_inicio,contratoData.fecha_fin,contratoData.estado,contratoData.monto], (error, result) => {
+        if(error){
+            throw error;
+        }else{
+            callback(null, true);
+        }
+        
+    });
 }
 
 contrato.updateContrato = (id,datosContrato,callback) => {
-    
-    con = conection.conMysql();
-    if(con){
-        var sql = `UPDATE contrato SET ?  WHERE contratoid=?`;
-        con.query(sql,[datosContrato,id], (error,rows) => {
-            if(error){
-                throw error;
-            }else{
-                callback(null, true);
-            }
-            conection.cerrarConexion();
-        });
-    }
+    var sql = `UPDATE contrato SET ?  WHERE contratoid=?`;
+    pool.query(sql,[datosContrato,id], (error,rows) => {
+        if(error){
+            throw error;
+        }else{
+            callback(null, true);
+        }
+    });
 }
 
 contrato.deleteContrato = (id,callback) => {
-
-    con = conection.conMysql();
-    if(con){
-        const _id = con.escape(id);
-        var sql = `DELETE FROM contrato WHERE contratoid = ${_id}`;
-        con.query(sql, (error,rows) => {
-            if(error){
-                throw error;
-            }else{
-                callback(null, rows.affectedRows);
-            }
-            conection.cerrarConexion();
-        });
-    }
+    const _id = pool.escape(id);
+    var sql = `DELETE FROM contrato WHERE contratoid = ${_id}`;
+    pool.query(sql, (error,rows) => {
+        if(error){
+            throw error;
+        }else{
+            callback(null, rows.affectedRows);
+        }
+    });
 }
 
 module.exports = contrato;

@@ -1,81 +1,62 @@
-const conection = require('../db/mysql');
+const { pool } = require('../db/mysql')
 
 var departamento = {}
 
 departamento.getDepartamento = (callback) => {
-        conection.pool.query('select departamentoid,nombre,descripcion,tipo,precio_mensual,estado,aforo,ubicacion,activo from departamento', (error,rows) => {
-            if(error){
-                throw error;
-            }else{
-                res = rows
-                callback(null,res);
-            }
-        });
+    pool.query('select departamentoid,nombre,descripcion,tipo,precio_mensual,estado,aforo,ubicacion,activo from departamento', (error,rows) => {
+        if(error){
+            throw error;
+        }else{
+            res = rows
+            callback(null,res);
+        }
+    });
 }
 
 departamento.getDepartamentoById = (id,callback) => {
-    con = conection.conMysql();
-    if(con){
-        const _id = con.escape(id);
-        var sql = `select departamentoid,nombre,descripcion,tipo,precio_mensual,estado,aforo,ubicacion,activo from departamento WHERE departamentoid = ${_id}`;
-        con.query(sql, (error,rows) => {
-            if(error){
-                throw error;
-            }else{
-                res = rows
-                callback(null,res);
-            }
-            conection.cerrarConexion();
-        });
-    }
+    const _id = pool.escape(id);
+    var sql = `select departamentoid,nombre,descripcion,tipo,precio_mensual,estado,aforo,ubicacion,activo from departamento WHERE departamentoid = ${_id}`;
+    pool.query(sql, (error,rows) => {
+        if(error){
+            throw error;
+        }else{
+            res = rows
+            callback(null,res);
+        }
+    });
 }
 
 departamento.insertDepartamento = (departamentoData,callback) => {
-    con = conection.conMysql();
-    if (con) 
-    {
-        con.query('call sp_addDepartamento(?,?,?,?,?,?,?)', [departamentoData.nombre,departamentoData.descripcion,departamentoData.tipo,departamentoData.precio_mensual,departamentoData.estado,departamentoData.aforo,departamentoData.ubicacion], (error, result) => {
-            if(error){
-                throw error;
-            }else{
-                callback(null, true);
-            }
-            conection.cerrarConexion();
-        });
-    }
+    pool.query('call sp_addDepartamento(?,?,?,?,?,?,?)', [departamentoData.nombre,departamentoData.descripcion,departamentoData.tipo,departamentoData.precio_mensual,departamentoData.estado,departamentoData.aforo,departamentoData.ubicacion], (error, result) => {
+        if(error){
+            throw error;
+        }else{
+            callback(null, true);
+        }
+    });
 }
 
 departamento.updateDepartamento = (id,datosDepartamento,callback) => {
-    
-    con = conection.conMysql();
-    if(con){
-        var sql = `UPDATE departamento SET ?  WHERE departamentoid=?`;
-        con.query(sql,[datosDepartamento,id], (error,rows) => {
-            if(error){
-                throw error;
-            }else{
-                callback(null, true);
-            }
-            conection.cerrarConexion();
-        });
-    }
+    var sql = `UPDATE departamento SET ?  WHERE departamentoid=?`;
+    pool.query(sql,[datosDepartamento,id], (error,rows) => {
+        if(error){
+            throw error;
+        }else{
+            callback(null, true);
+        }
+    });
 }
 
 departamento.deleteDepartamento = (id,callback) => {
-
-    con = conection.conMysql();
-    if(con){
-        const _id = con.escape(id);
-        var sql = `DELETE FROM departamento WHERE departamentoid = ${_id}`;
-        con.query(sql, (error,rows) => {
-            if(error){
-                throw error;
-            }else{
-                callback(null, rows.affectedRows);
-            }
-            conection.cerrarConexion();
-        });
-    }
+    const _id = pool.escape(id);
+    var sql = `DELETE FROM departamento WHERE departamentoid = ${_id}`;
+    pool.query(sql, (error,rows) => {
+        if(error){
+            throw error;
+        }else{
+            callback(null, rows.affectedRows);
+        }
+    });
 }
 
 module.exports = departamento;

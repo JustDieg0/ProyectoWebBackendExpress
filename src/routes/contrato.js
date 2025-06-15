@@ -56,26 +56,28 @@ router.get("/contrato/:id", async (req,res) =>{
 
 router.post("/contrato", async (req,res) =>{
 
-
     const schema = joi.object({
-        usuarioid: joi.string().length(4).required(),
-        habitacionid: joi.string().length(4).required(),
-        garantiaid: joi.string().length(4).required(),
+        usuarioid: joi.string().length(5).required(),
+        administradorid: joi.string().length(5).required(),
+        departamentoid: joi.string().length(5).required(),
+        garantiaid: joi.string().length(5).required(),
         fecha_inicio: joi.string().isoDate().required(),
         fecha_fin: joi.string().isoDate().required(),
-        estado: joi.valid('activo','finalizado').required(),
-        monto: joi.number().precision(2).min(0).max(99999.99).required()
-    })
+        estado: joi.valid('por confirmar','activo','terminado').required(),
+        monto: joi.number().precision(2).min(0).max(9999.99).required()
+    });
 
     contratoData = {
         usuarioid: req.body.usuarioid,
-        habitacionid: req.body.habitacionid,
+        administradorid: req.body.administradorid,
+        departamentoid: req.body.departamentoid,
         garantiaid: req.body.garantiaid,
         fecha_inicio: req.body.fecha_inicio,
         fecha_fin: req.body.fecha_fin,
         estado: req.body.estado,
         monto: req.body.monto
     }
+
     const { error } = schema.validate(req.body);
     if (error) {
         return res.status(400).json({ 
@@ -112,24 +114,27 @@ router.put("/contrato/:id", async (req,res) =>{
     const { id } = req.params;
 
     const schema = joi.object({
-        usuarioid: joi.string().length(4).required(),
-        habitacionid: joi.string().length(4).required(),
-        garantiaid: joi.string().length(4).required(),
+        usuarioid: joi.string().length(5).required(),
+        administradorid: joi.string().length(5).required(),
+        departamentoid: joi.string().length(5).required(),
+        garantiaid: joi.string().length(5).required(),
         fecha_inicio: joi.string().isoDate().required(),
         fecha_fin: joi.string().isoDate().required(),
-        estado: joi.valid('activo','finalizado').required(),
-        monto: joi.number().precision(2).min(0).max(99999.99).required()
-    })
+        estado: joi.valid('por confirmar','activo','terminado').required(),
+        monto: joi.number().precision(2).min(0).max(9999.99).required()
+    });
 
     contratoData = {
         usuarioid: req.body.usuarioid,
-        habitacionid: req.body.habitacionid,
+        administradorid: req.body.administradorid,
+        departamentoid: req.body.departamentoid,
         garantiaid: req.body.garantiaid,
         fecha_inicio: req.body.fecha_inicio,
         fecha_fin: req.body.fecha_fin,
         estado: req.body.estado,
         monto: req.body.monto
     }
+
     const { error } = schema.validate(req.body);
     if (error) {
         return res.status(400).json({ 
@@ -166,24 +171,27 @@ router.patch("/contrato/:id", async (req,res) =>{
     const { id } = req.params;
 
     const schema = joi.object({
-        usuarioid: joi.string().length(4),
-        habitacionid: joi.string().length(4),
-        garantiaid: joi.string().length(4),
+        usuarioid: joi.string().length(5),
+        administradorid: joi.string().length(5),
+        departamentoid: joi.string().length(5),
+        garantiaid: joi.string().length(5),
         fecha_inicio: joi.string().isoDate(),
         fecha_fin: joi.string().isoDate(),
-        estado: joi.valid('activo','finalizado'),
-        monto: joi.number().precision(2).min(0).max(99999.99)
-    })
+        estado: joi.valid('por confirmar','activo','terminado'),
+        monto: joi.number().precision(2).min(0).max(9999.99)
+    });
 
     contratoData = {
         usuarioid: req.body.usuarioid,
-        habitacionid: req.body.habitacionid,
+        administradorid: req.body.administradorid,
+        departamentoid: req.body.departamentoid,
         garantiaid: req.body.garantiaid,
         fecha_inicio: req.body.fecha_inicio,
         fecha_fin: req.body.fecha_fin,
         estado: req.body.estado,
         monto: req.body.monto
     }
+
     const { error } = schema.validate(req.body);
     if (error) {
         return res.status(400).json({ 

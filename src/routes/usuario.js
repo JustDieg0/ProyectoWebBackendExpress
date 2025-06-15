@@ -17,7 +17,7 @@ router.get("/usuario", async (req,res) =>{
                 message: "Usuarios obtenidos exitosamente.",
                 data: data,
             });
-        })
+        });
     } catch (err){
         return res.status(500).json({
             message: "Ocurrió un error inesperado."
@@ -63,15 +63,20 @@ router.post("/usuario", async (req,res) =>{
         telefono: joi.string().pattern(/^\d{9}$/).required(),
         nacionalidad: joi.string().min(3).max(50).required(),
         doc_ident: joi.string().min(3).max(50).required(),
-    })
+        correo: joi.string().min(3).max(50).required(),
+        contrasena: joi.string().min(3).max(50).required(),
+    });
 
     usuarioData = {
         nombres: req.body.nombres,
         apellidos: req.body.apellidos,
         telefono: req.body.telefono,
         nacionalidad: req.body.nacionalidad,
-        doc_ident: req.body.doc_ident
+        doc_ident: req.body.doc_ident,
+        correo: req.body.correo,
+        contrasena: req.body.contrasena
     }
+
     const { error } = schema.validate(req.body);
     if (error) {
         return res.status(400).json({ 
@@ -113,15 +118,22 @@ router.put("/usuario/:id", async (req,res) =>{
         telefono: joi.string().pattern(/^\d{9}$/).required(),
         nacionalidad: joi.string().min(3).max(50).required(),
         doc_ident: joi.string().min(3).max(50).required(),
-    })
+        correo: joi.string().min(3).max(50).required(),
+        contrasena: joi.string().min(3).max(50).required(),
+        activo: joi.boolean().required()
+    });
 
     usuarioData = {
         nombres: req.body.nombres,
         apellidos: req.body.apellidos,
         telefono: req.body.telefono,
         nacionalidad: req.body.nacionalidad,
-        doc_ident: req.body.doc_ident
+        doc_ident: req.body.doc_ident,
+        correo: req.body.correo,
+        contrasena: req.body.contrasena,
+        activo: req.body.activo
     }
+
     const { error } = schema.validate(req.body);
     if (error) {
         return res.status(400).json({ 
@@ -163,15 +175,22 @@ router.patch("/usuario/:id", async (req,res) =>{
         telefono: joi.string().pattern(/^\d{9}$/),
         nacionalidad: joi.string().min(3).max(50),
         doc_ident: joi.string().min(3).max(50),
-    })
+        correo: joi.string().min(3).max(50),
+        contrasena: joi.string().min(3).max(50),
+        activo: joi.boolean()
+    });
 
     usuarioData = {
         nombres: req.body.nombres,
         apellidos: req.body.apellidos,
         telefono: req.body.telefono,
         nacionalidad: req.body.nacionalidad,
-        doc_ident: req.body.doc_ident
+        doc_ident: req.body.doc_ident,
+        correo: req.body.correo,
+        contrasena: req.body.contrasena,
+        activo: req.body.activo
     }
+
     const { error } = schema.validate(req.body);
     if (error) {
         return res.status(400).json({ 
@@ -288,6 +307,26 @@ router.get("/cantidad/contrato", async (req,res) =>{
 router.get("/cantidad/pagos", async (req,res) =>{
     try{
         await usuarioModel.getCountPagos((error,data)=>{
+            if (error) {
+                return res.status(500).json({
+                    message: "Error interno del servidor"
+                });
+            }
+            return res.status(200).json({
+                message: "Usuarios obtenidos exitosamente.",
+                data: data,
+            });
+        })
+    } catch (err){
+        return res.status(500).json({
+            message: "Ocurrió un error inesperado."
+        });
+    }
+});
+
+router.get("/cantidad/reservas", async (req,res) =>{
+    try{
+        await usuarioModel.getCountReservas((error,data)=>{
             if (error) {
                 return res.status(500).json({
                     message: "Error interno del servidor"
