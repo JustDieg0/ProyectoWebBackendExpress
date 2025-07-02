@@ -2,10 +2,11 @@ const { Router } = require("express");
 const joi = require("joi");
 
 const usuarioModel = require("../models/usuario");
+const {  autenticarToken, soloAdmin, mismoUsuarioOAdmin } = require("../auth/auth");
 
 const router = Router();
 
-router.get("/usuario", async (req,res) =>{
+router.get("/usuario", autenticarToken, soloAdmin, async (req,res) =>{
     try{
         await usuarioModel.getUsuario((error,data)=>{
             if (error) {
@@ -25,7 +26,7 @@ router.get("/usuario", async (req,res) =>{
     }
 });
 
-router.get("/usuario/:id", async (req,res) =>{
+router.get("/usuario/:id", autenticarToken, mismoUsuarioOAdmin, async (req,res) =>{
     const { id } = req.params;
     try{
         await usuarioModel.getUsuarioById(id,(error,data)=>{
@@ -109,7 +110,7 @@ router.post("/usuario", async (req,res) =>{
     }
 });
 
-router.put("/usuario/:id", async (req,res) =>{
+router.put("/usuario/:id", autenticarToken, mismoUsuarioOAdmin, async (req,res) =>{
     const { id } = req.params;
 
     const schema = joi.object({
@@ -166,7 +167,7 @@ router.put("/usuario/:id", async (req,res) =>{
     }
 });
 
-router.patch("/usuario/:id", async (req,res) =>{
+router.patch("/usuario/:id", autenticarToken, mismoUsuarioOAdmin, async (req,res) =>{
     const { id } = req.params;
 
     const schema = joi.object({
@@ -237,7 +238,7 @@ router.patch("/usuario/:id", async (req,res) =>{
     }
 });
 
-router.delete("/usuario/:id", async (req,res) =>{
+router.delete("/usuario/:id", autenticarToken, soloAdmin, async (req,res) =>{
     const { id } = req.params;
     try{
         await usuarioModel.deleteUsuario(id,(error,affectedRows)=>{
@@ -263,6 +264,7 @@ router.delete("/usuario/:id", async (req,res) =>{
         });
     }
 });
+
 
 router.get("/cantidad/usuario", async (req,res) =>{
     try{

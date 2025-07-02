@@ -59,4 +59,15 @@ departamento.deleteDepartamento = (id,callback) => {
     });
 }
 
+departamento.getActiveAndDisponibleDepartamento = (callback) => {
+    pool.query('select departamentoid,nombre,descripcion,tipo,precio_mensual,estado,aforo,ubicacion from departamento where activo=1 AND estado="disponible"', (error,rows) => {
+        if(error){
+            throw error;
+        }else{
+            res = rows
+            callback(null,res);
+        }
+    });
+}
+
 module.exports = departamento;

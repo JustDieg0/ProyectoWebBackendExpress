@@ -1,11 +1,32 @@
 const { Router } = require("express");
 const joi = require("joi");
 
+const { autenticarToken, soloAdmin } = require("../auth/auth");
 const departamentoModel = require("../models/departamento");
 
 const router = Router();
 
 router.get("/departamento", async (req,res) =>{
+    try{
+        await departamentoModel.getActiveAndDisponibleDepartamento((error,data)=>{
+            if (error) {
+                return res.status(500).json({
+                    message: "Error interno del servidor"
+                });
+            }
+            return res.status(200).json({
+                message: "Departamentos obtenidos exitosamente.",
+                data: data,
+            });
+        })
+    } catch (err){
+        return res.status(500).json({
+            message: "Ocurrió un error inesperado."
+        });
+    }
+});
+
+router.get("/admin/departamento",autenticarToken ,soloAdmin , async (req,res) =>{
     try{
         await departamentoModel.getDepartamento((error,data)=>{
             if (error) {
@@ -54,7 +75,7 @@ router.get("/departamento/:id", async (req,res) =>{
 
 });
 
-router.post("/departamento", async (req,res) =>{
+router.post("/departamento",autenticarToken ,soloAdmin, async (req,res) =>{
 
 
     const schema = joi.object({
@@ -109,7 +130,7 @@ router.post("/departamento", async (req,res) =>{
     }
 });
 
-router.put("/departamento/:id", async (req,res) =>{
+router.put("/departamento/:id",autenticarToken ,soloAdmin, async (req,res) =>{
     const { id } = req.params;
 
     const schema = joi.object({
@@ -166,7 +187,7 @@ router.put("/departamento/:id", async (req,res) =>{
     }
 });
 
-router.patch("/departamento/:id", async (req,res) =>{
+router.patch("/departamento/:id",autenticarToken ,soloAdmin, async (req,res) =>{
     const { id } = req.params;
 
     const schema = joi.object({
@@ -236,7 +257,7 @@ router.patch("/departamento/:id", async (req,res) =>{
     }
 });
 
-router.delete("/departamento/:id", async (req,res) =>{
+router.delete("/departamento/:id",autenticarToken ,soloAdmin, async (req,res) =>{
     const { id } = req.params;
     try{
         await departamentoModel.deleteDepartamento(id,(error,affectedRows)=>{

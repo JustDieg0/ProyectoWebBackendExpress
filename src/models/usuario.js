@@ -60,6 +60,17 @@ usuario.deleteUsuario = (id,callback) => {
     });
 }
 
+usuario.loginUsuario = (usuarioData,callback) => {
+    pool.query('SELECT * FROM usuario WHERE correo = ? AND contrasena = ?', [usuarioData.correo,usuarioData.contrasena], (error, rows) => {
+        if(error){
+            throw error;
+        }else{
+            res = rows
+            callback(null, res);
+        }
+    });
+}
+
 usuario.getCountUsuario = (callback) => {
     pool.query('select COUNT(*) AS cantidad from usuario WHERE activo = 1', (error,rows) => {
         if(error){
