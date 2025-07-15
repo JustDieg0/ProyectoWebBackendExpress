@@ -54,6 +54,41 @@ router.get("/contrato/:id", async (req,res) =>{
 
 });
 
+//CAMBIOS - REPORTE 1
+router.get("/contrato/por-fecha", async (req, res) => {
+  // Filtro
+  const schema = joi.object({
+    desde: joi.string().isoDate().required()
+           .messages({ "any.required": "Parámetro 'desde' requerido" }),
+    hasta: joi.string().isoDate().required()
+           .messages({ "any.required": "Parámetro 'hasta' requerido" })
+  });
+
+  const { error, value } = schema.validate(req.query);
+  if (error) {
+    return res.status(400).json({ message: error.message });
+  }
+
+  const { desde, hasta } = value;
+
+  // 2. Consulta
+  try {
+    await contratoModel.getContratosByRangoFechas(desde, hasta, (err, data) => {
+      if (err) {
+        return res.status(500).json({ message: "Error interno del servidor" });
+      }
+
+      return res.status(200).json({
+        message: `Contratos entre ${desde} y ${hasta}`,
+        cantidad: data.length,
+        data
+      });
+    });
+  } catch (err) {
+    return res.status(500).json({ message: "Ocurrió un error inesperado." });
+  }
+});
+
 router.post("/contrato", async (req,res) =>{
 
     const schema = joi.object({
