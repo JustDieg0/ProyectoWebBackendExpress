@@ -19,9 +19,10 @@ app.use(cookieParser());
 app.use(require("./routes/usuario"));
 app.use(require("./routes/contrato"));
 app.use(require("./routes/departamento"));
-/*app.use(require("./routes/pago"));
+app.use(require("./routes/reserva"));
+app.use(require("./routes/pago"));
 app.use(require("./routes/garantia"));
-app.use(require("./routes/contratoservicio"));
+/*app.use(require("./routes/contratoservicio"));
 app.use(require("./routes/servicio.js"));*/
 app.use(require("./routes/login.js"));
 app.use(require("./routes/imagenes.js"));

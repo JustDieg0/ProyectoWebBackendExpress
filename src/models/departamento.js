@@ -70,4 +70,25 @@ departamento.getActiveAndDisponibleDepartamento = (callback) => {
     });
 }
 
+departamento.getDepartamentosEliminados = (callback) => {
+    pool.query('SELECT departamentoid, nombre, descripcion, tipo, precio_mensual, estado, aforo, ubicacion, activo FROM departamento WHERE activo = 0', (error, rows) => {
+        if (error) {
+            throw error;
+        } else {
+            callback(null, rows);
+        }
+    });
+}
+
+departamento.getActiveAndDisponibleDepartamento = (callback) => {
+    pool.query('select departamentoid,nombre,descripcion,tipo,precio_mensual,estado,aforo,ubicacion from departamento where activo=1 AND estado="disponible"', (error,rows) => {
+        if(error){
+            throw error;
+        }else{
+            res = rows
+            callback(null,res);
+        }
+    });
+}
+
 module.exports = departamento;

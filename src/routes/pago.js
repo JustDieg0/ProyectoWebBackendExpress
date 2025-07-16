@@ -245,4 +245,32 @@ router.delete("/pago/:id", async (req,res) =>{
     }
 });
 
+// Endpoint para obtener pagos por año y mes
+router.get("/pago/periodo/:year/:month", async (req, res) => {
+    const year = parseInt(req.params.year);
+    const month = parseInt(req.params.month);
+    if (isNaN(year) || isNaN(month)) {
+        return res.status(400).json({
+            message: "Año y mes deben ser números válidos."
+        });
+    }
+    try {
+        await pagoModel.getPagosByYearMonth(year, month, (error, data) => {
+            if (error) {
+                return res.status(500).json({
+                    message: "Error interno del servidor"
+                });
+            }
+            return res.status(200).json({
+                message: "Pagos obtenidos exitosamente.",
+                data: data,
+            });
+        });
+    } catch (err) {
+        return res.status(500).json({
+            message: "Ocurrió un error inesperado."
+        });
+    }
+});
+
 module.exports = router;

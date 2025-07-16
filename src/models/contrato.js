@@ -61,4 +61,36 @@ contrato.deleteContrato = (id,callback) => {
     });
 }
 
+contrato.getContratoTipoPago = (callback) => {
+    const sql = `
+        SELECT 
+            p.pagoid,
+            c.contratoid,
+            c.administradorid,
+            c.usuarioid,
+            c.departamentoid,
+            c.garantiaid,
+            c.fecha_inicio,
+            c.fecha_fin,
+            c.estado,
+            c.monto AS monto_contrato,
+            p.monto AS monto_pago,
+            p.tipo_pago,
+            p.metodo_pago
+        FROM 
+            contrato c
+        LEFT JOIN 
+            pago p ON c.contratoid = p.contratoid
+    `;
+    
+    pool.query(sql, (error, rows) => {
+        if (error) {
+            return callback(error);
+        }else{
+            res = rows
+            callback(null,res);
+        }
+    });
+}
+
 module.exports = contrato;

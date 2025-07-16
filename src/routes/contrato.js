@@ -266,4 +266,25 @@ router.delete("/contrato/:id", async (req,res) =>{
     }
 });
 
+router.get("/contratopago", async (req,res) =>{
+    try{
+        await contratoModel.getContratoTipoPago((error,data)=>{
+            if (error) {
+                return res.status(500).json({
+                    message: "Error interno del servidor"
+                });
+            }
+            return res.status(200).json({
+                message: "Contratos obtenidos exitosamente.",
+                data: data,
+            });
+        })
+    } catch (err){
+        return res.status(500).json({
+            message: "Ocurrió un error inesperado."
+        });
+    }
+});
+
+
 module.exports = router;

@@ -82,4 +82,37 @@ pago.deletePago = (id,callback) => {
     }
 }
 
+// Extrae pagos por año y mes
+pago.getPagosByYearMonth = (year, month, callback) => {
+    const con = conection.conMysql();
+    if (con) {
+        const sql = `SELECT 
+            u.doc_ident, 
+            u.nombres, 
+            u.apellidos, 
+            c.fecha_inicio, 
+            c.fecha_fin, 
+            p.fecha_pago, 
+            p.monto, 
+            p.tipo_pago
+        FROM 
+            usuario u
+        INNER JOIN 
+            contrato c ON u.usuarioid = c.usuarioid
+        INNER JOIN 
+            pago p ON c.contratoid = p.contratoid
+        WHERE 
+            YEAR(p.fecha_pago) = ?
+            AND MONTH(p.fecha_pago) = ?`;
+        con.query(sql, [year, month], (error, rows) => {
+            if (error) {
+                throw error;
+            } else {
+                callback(null, rows);
+            }
+            conection.cerrarConexion();
+        });
+    }
+}
+
 module.exports = pago;

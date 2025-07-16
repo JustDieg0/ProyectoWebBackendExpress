@@ -284,4 +284,24 @@ router.delete("/departamento/:id",autenticarToken ,soloAdmin, async (req,res) =>
     }
 });
 
+router.get("/admin/departamentosEliminados",autenticarToken ,soloAdmin , async (req,res) =>{
+    try{
+        await departamentoModel.getDepartamentosEliminados((error,data)=>{
+            if (error) {
+                return res.status(500).json({
+                    message: "Error interno del servidor"
+                });
+            }
+            return res.status(200).json({
+                message: "Departamentos obtenidos exitosamente.",
+                data: data,
+            });
+        })
+    } catch (err){
+        return res.status(500).json({
+            message: "Ocurrió un error inesperado."
+        });
+    }
+});
+
 module.exports = router;
