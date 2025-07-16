@@ -245,4 +245,39 @@ router.delete("/pago/:id", async (req,res) =>{
     }
 });
 
+//CAMBIOS - REPORTE 2
+router.get("/pago/indicadores", async (req, res) => {
+  const schema = joi.object({
+    anio: joi.number().integer().min(2000).max(2100).default(
+      new Date().getFullYear()
+    ),
+  });
+
+  const { error, value } = schema.validate(req.query);
+  if (error) {
+    return res.status(400).json({ message: error.message });
+  }
+
+  const { anio } = value;
+
+  try {
+    await pagoModel.getIndicadoresIngresos(anio, (err, indicadores) => {
+      if (err) {
+        return res.status(500).json({ message: "Error interno del servidor" });
+      }
+      if (!indicadores || indicadores.cantidad_meses === 0) {
+        return res.status(404).json({
+          message: `No hay pagos registrados para el año ${anio}`,
+        });
+      }
+      return res.status(200).json({
+        message: `Indicadores de ingresos para ${anio}`,
+        ...indicadores, 
+      });
+    });
+  } catch (err) {
+    return res.status(500).json({ message: "Ocurrió un error inesperado." });
+  }
+});
+
 module.exports = router;

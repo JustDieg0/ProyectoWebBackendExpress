@@ -63,7 +63,6 @@ contrato.deleteContrato = (id,callback) => {
 
 //REPORTE 1
 contrato.getContratosByRangoFechas = (desde, hasta, callback) => {
-  // Usamos parámetros ? para prevenir SQL‑Injection.
   const sql = `
     SELECT contratoid, administradorid, usuarioid, departamentoid, garantiaid,
            fecha_inicio, fecha_fin, estado, monto
@@ -75,7 +74,7 @@ contrato.getContratosByRangoFechas = (desde, hasta, callback) => {
 
   pool.query(sql, [desde, hasta, desde, hasta, desde, hasta], (error, rows) => {
     if (error) {
-      throw error; // será capturado por el try/catch del route
+      throw error;
     }
     callback(null, rows);
   });

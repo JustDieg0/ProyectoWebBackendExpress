@@ -71,7 +71,7 @@ router.get("/contrato/por-fecha", async (req, res) => {
 
   const { desde, hasta } = value;
 
-  // 2. Consulta
+  // CONSULTA
   try {
     await contratoModel.getContratosByRangoFechas(desde, hasta, (err, data) => {
       if (err) {

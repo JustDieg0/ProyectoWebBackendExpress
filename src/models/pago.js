@@ -82,4 +82,50 @@ pago.deletePago = (id,callback) => {
     }
 }
 
+pago.getIndicadoresIngresos = (anio, callback) => {
+  const con = conection.conMysql();
+  if (!con) return;
+  const sqlTotales = `
+      SELECT LPAD(MONTH(fecha_pago),2,'0')  AS mes,
+             SUM(monto)                     AS total_mes
+        FROM pago
+       WHERE YEAR(fecha_pago) = ?
+    GROUP BY mes
+    ORDER BY mes;
+  `;
+
+  con.query(sqlTotales, [anio], (err, rows) => {
+    if (err) throw err;
+
+    const totales = Array.from({ length: 12 }, () => 0);
+    rows.forEach(r => {
+      const idx = parseInt(r.mes, 10) - 1; 
+      totales[idx] = Number(r.total_mes);
+    });
+
+    // 2) Calcular indicadores
+    let ingresoMax = Math.max(...totales);
+    let ingresoMin = Math.min(...totales);
+    let promedio   = totales.reduce((a, b) => a + b, 0) / 12;
+
+    const mesMaxIdx = totales.indexOf(ingresoMax);        
+    const mesMinIdx = totales.indexOf(ingresoMin);
+
+    const formatearMes = i =>
+      `${anio}-${(i + 1).toString().padStart(2, "0")}`;
+
+    const resultado = {
+      mes_max: formatearMes(mesMaxIdx),
+      ingreso_max: ingresoMax,
+      mes_min: formatearMes(mesMinIdx),
+      ingreso_min: ingresoMin,
+      promedio: Number(promedio.toFixed(2)),
+      cantidad_meses: rows.length, 
+    };
+
+    callback(null, resultado);
+    conection.cerrarConexion();
+  });
+};
+
 module.exports = pago;
