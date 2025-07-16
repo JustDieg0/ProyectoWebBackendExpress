@@ -61,4 +61,23 @@ contrato.deleteContrato = (id,callback) => {
     });
 }
 
+//REPORTE 1
+contrato.getContratosByRangoFechas = (desde, hasta, callback) => {
+  const sql = `
+    SELECT contratoid, administradorid, usuarioid, departamentoid, garantiaid,
+           fecha_inicio, fecha_fin, estado, monto
+    FROM   contrato
+    WHERE  fecha_inicio >= ? AND fecha_inicio <= ?   -- filtra por fecha_inicio
+       OR  fecha_fin    >= ? AND fecha_fin    <= ?   -- (opcional) filtra por fecha_fin
+       OR (fecha_inicio <= ? AND fecha_fin >= ?)     -- solape completo
+  `;
+
+  pool.query(sql, [desde, hasta, desde, hasta, desde, hasta], (error, rows) => {
+    if (error) {
+      throw error;
+    }
+    callback(null, rows);
+  });
+};
+
 module.exports = contrato;
